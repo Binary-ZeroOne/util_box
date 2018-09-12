@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections.MapUtils;
 import org.zero.utilitybox.common.ServerResponse;
+import org.zero.utilitybox.exception.ParamException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -86,10 +87,10 @@ public class BeanValidatorUtil {
      *
      * @param param param
      */
-    public static void check(Object param) throws RuntimeException {
+    public static void check(Object param) throws ParamException {
         Map<String, String> map = validateObject(param);
         if (MapUtils.isNotEmpty(map)) {
-            throw new RuntimeException(map.toString());
+            throw new ParamException(map.toString());
         }
     }
 

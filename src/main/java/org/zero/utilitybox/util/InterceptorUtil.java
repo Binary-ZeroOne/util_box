@@ -45,20 +45,10 @@ public class InterceptorUtil {
 
         // 解析请求参数，以此获取具体的参数key以及value
         StringBuilder requestParamBuilder = new StringBuilder();
-        Map paramMap = httpServletRequest.getParameterMap();
-        for (Object o : paramMap.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            String mapKey = (String) entry.getKey();
-            String mapValue = StringUtils.EMPTY;
-
-            // request这个参数的map，里面的value返回的其实是一个字符串数组
-            Object obj = entry.getValue();
-            if (obj instanceof String[]) {
-                String[] strs = (String[]) obj;
-                mapValue = Arrays.toString(strs);
-            }
+        Map<String, String[]> paramMap = httpServletRequest.getParameterMap();
+        for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
             // 拼接出完整的请求参数
-            requestParamBuilder.append(mapKey).append("=").append(mapValue);
+            requestParamBuilder.append(entry.getKey()).append("=").append(Arrays.toString(entry.getValue()));
         }
 
         String[] resolveData = new String[DATA_LENGTH];
@@ -80,7 +70,7 @@ public class InterceptorUtil {
     public static String[] printRequestLog(HttpServletRequest httpServletRequest, Object handler) {
         String[] resolveData = getResolveData(httpServletRequest, handler);
 
-        log.info("权限拦截器拦截到请求, className : {}, methodName : {}, param : {}, requestURI : {}", resolveData[CLASS_NAME], resolveData[METHOD_NAME], resolveData[REQUEST_PARAM],resolveData[REQUEST_URI]);
+        log.info("权限拦截器拦截到请求, className : {}, methodName : {}, param : {}, requestURI : {}", resolveData[CLASS_NAME], resolveData[METHOD_NAME], resolveData[REQUEST_PARAM], resolveData[REQUEST_URI]);
 
         return resolveData;
     }
