@@ -4,7 +4,7 @@ package org.zero.utilitybox.util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.zero.utilitybox.common.ServerResponse;
-import org.zero.utilitybox.common.enums.ResponseCode;
+import org.zero.utilitybox.common.enums.ResponseEnum;
 import weixin.popular.bean.BaseResult;
 import weixin.popular.bean.paymch.MchBase;
 import weixin.popular.bean.paymch.base.BillResult;
@@ -33,9 +33,9 @@ public class CheckedResultUtil {
      */
     private static final String NOT_FOUND = "NOT_FOUND";
 
-    public static <T> ServerResponse<T> checkedGetResult(ResponseCode successMsg, ResponseCode errorMsg, T result) {
+    public static <T> ServerResponse<T> checkedGetResult(ResponseEnum successMsg, ResponseEnum errorMsg, T result) {
         if (result == null) {
-            return ServerResponse.createByErrorMessage(ResponseCode.OPERATION_RETRY.getMsg());
+            return ServerResponse.createByErrorMsg(ResponseEnum.OPERATION_RETRY.getMsg());
         }
 
         if (result instanceof BaseResult) {
@@ -59,16 +59,16 @@ public class CheckedResultUtil {
      * @param <T>        泛型
      * @return ServerResponse<T>
      */
-    private static <T> ServerResponse<T> checkedMchBase(ResponseCode successMsg, ResponseCode errorMsg, T mchResult) {
+    private static <T> ServerResponse<T> checkedMchBase(ResponseEnum successMsg, ResponseEnum errorMsg, T mchResult) {
 
         MchBase mchBase = (MchBase) mchResult;
 
-        if (StringUtils.isNotBlank(mchBase.getReturn_code()) && mchBase.getReturn_code().equals(ResponseCode.SUCCESS.getMsg())) {
+        if (StringUtils.isNotBlank(mchBase.getReturn_code()) && mchBase.getReturn_code().equals(ResponseEnum.SUCCESS.getMsg())) {
 
-            if (StringUtils.isNotBlank(mchBase.getResult_code()) && mchBase.getResult_code().equals(ResponseCode.SUCCESS.getMsg())) {
+            if (StringUtils.isNotBlank(mchBase.getResult_code()) && mchBase.getResult_code().equals(ResponseEnum.SUCCESS.getMsg())) {
                 log.info("【检查mchResult数据】successMsg: {}", successMsg.getMsg());
                 return ServerResponse.createBySuccessMsg(successMsg.getMsg(), mchResult);
-            } else if (StringUtils.isNotBlank(mchBase.getResult_code()) && mchBase.getResult_code().equals(ResponseCode.FAIL.getMsg())) {
+            } else if (StringUtils.isNotBlank(mchBase.getResult_code()) && mchBase.getResult_code().equals(ResponseEnum.FAIL.getMsg())) {
                 // 判断是否是已支付订单
                 if (mchBase.getErr_code().equals(ORDERPAID)) {
                     log.error("【检查mchResult数据】code: {}, errorMsg: {}", mchBase.getErr_code(), mchBase.getErr_code_des());
@@ -81,7 +81,7 @@ public class CheckedResultUtil {
                     String errMsg = StringUtils.join(errorMsg.getMsg(), mchBase.getErr_code_des(),
                             ", 请稍后使用原商户订单号重试, 请勿更换订单号, 否则可能造成重复支付等资金风险。若仍存在问题请及时联系客服确认付款情况 ");
 
-                    return ServerResponse.createByErrorMessage(errMsg);
+                    return ServerResponse.createByErrorMsg(errMsg);
                 }
 
                 if (mchBase.getErr_code().equals(NOT_FOUND)) {
@@ -89,19 +89,19 @@ public class CheckedResultUtil {
                     String errMsg = StringUtils.join(errorMsg.getMsg(), mchBase.getErr_code_des(),
                             ", 请勿直接判断为付款失败, 先确认商户订单号是自己发起的, 然后隔几分钟再尝试查询。或通过相同的商户订单号再次发起付款, 否则可能造成资金损失, 若仍存在问题请及时联系客服确认付款情况 ");
 
-                    return ServerResponse.createByErrorMessage(errMsg);
+                    return ServerResponse.createByErrorMsg(errMsg);
                 }
 
                 log.error("【检查mchResult数据】code: {}, errorMsg: {}", mchBase.getErr_code(), mchBase.getErr_code_des());
-                return ServerResponse.createByErrorMessage(errorMsg.getMsg() + mchBase.getErr_code_des());
+                return ServerResponse.createByErrorMsg(errorMsg.getMsg() + mchBase.getErr_code_des());
             }
 
             log.info("【检查mchResult数据】successMsg: {}", successMsg.getMsg());
             return ServerResponse.createBySuccessMsg(successMsg.getMsg(), mchResult);
-        } else if (StringUtils.isNotBlank(mchBase.getReturn_code()) && mchBase.getReturn_code().equals(ResponseCode.FAIL.getMsg())) {
+        } else if (StringUtils.isNotBlank(mchBase.getReturn_code()) && mchBase.getReturn_code().equals(ResponseEnum.FAIL.getMsg())) {
 
             log.error("【检查mchResult数据】code: {}, errorMsg: {}", mchBase.getReturn_code(), mchBase.getReturn_msg());
-            return ServerResponse.createByErrorMessage(errorMsg.getMsg() + mchBase.getReturn_msg());
+            return ServerResponse.createByErrorMsg(errorMsg.getMsg() + mchBase.getReturn_msg());
         }
 
         if (mchResult instanceof BillResult) {
@@ -109,7 +109,7 @@ public class CheckedResultUtil {
         }
 
         log.error("【检查mchResult数据】code: {}, errorMsg: {}", mchBase.getReturn_code(), mchBase.getReturn_msg());
-        return ServerResponse.createByErrorMessage(errorMsg.getMsg() + mchBase.getReturn_msg());
+        return ServerResponse.createByErrorMsg(errorMsg.getMsg() + mchBase.getReturn_msg());
     }
 
     /**
@@ -121,16 +121,16 @@ public class CheckedResultUtil {
      * @param <T>        泛型
      * @return ServerResponse<T>
      */
-    private static <T> ServerResponse<T> checkedBaseResult(ResponseCode successMsg, ResponseCode errorMsg, T result) {
+    private static <T> ServerResponse<T> checkedBaseResult(ResponseEnum successMsg, ResponseEnum errorMsg, T result) {
         BaseResult baseResult = (BaseResult) result;
         // 判断是否有错误码
-        if (baseResult.getErrcode() == null || baseResult.getErrcode().equals(ResponseCode.SUCCESS.getCode().toString())) {
+        if (baseResult.getErrcode() == null || baseResult.getErrcode().equals(ResponseEnum.SUCCESS.getCode().toString())) {
             log.info("【检查result数据】successMsg: {}", successMsg.getMsg());
             return ServerResponse.createBySuccessMsg(successMsg.getMsg(), result);
         }
 
         log.error("【检查result数据】code: {}, errorMsg: {}", baseResult.getErrcode(), baseResult.getErrmsg());
-        return ServerResponse.createByErrorCodeMessage(
+        return ServerResponse.createByErrorCodeMsg(
                 Integer.parseInt(baseResult.getErrcode()),
                 errorMsg.getMsg() + baseResult.getErrmsg());
     }
