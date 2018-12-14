@@ -23,7 +23,7 @@ public class BeanValidatorUtil {
 
     private static ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
-        /**
+    /**
      * 检验单个字段
      *
      * @param t      t
