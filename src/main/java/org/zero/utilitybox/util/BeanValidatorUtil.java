@@ -23,7 +23,7 @@ public class BeanValidatorUtil {
 
     private static ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
-    /**
+        /**
      * 检验单个字段
      *
      * @param t      t
@@ -45,7 +45,7 @@ public class BeanValidatorUtil {
     }
 
     /**
-     * 检验列表字段
+     * 检验多个字段
      *
      * @param collection collection
      * @return map
@@ -63,11 +63,13 @@ public class BeanValidatorUtil {
             Class[] classes = new Class[0];
             errors = validate(object, classes);
         }
+
+        log.error("[参数检查] 未通过检查的字段 : {}", errors.toString());
         return errors;
     }
 
     /**
-     * 可校验单个字段及列表字段
+     * 可校验单个字段及多个字段
      *
      * @param first   first
      * @param objects objects
@@ -83,14 +85,15 @@ public class BeanValidatorUtil {
     }
 
     /**
-     * 检查参数，若有错误则抛出异常
+     * 检查参数对象，若有错误则抛出异常
      *
      * @param param param
      */
     public static void check(Object param) throws ParamException {
         Map<String, String> map = validateObject(param);
         if (MapUtils.isNotEmpty(map)) {
-            throw new ParamException(map.toString());
+            log.error("[参数检查] 未通过检查的字段 : {}", map.toString());
+            throw new ParamException(mapToMsg(map));
         }
     }
 
@@ -99,13 +102,14 @@ public class BeanValidatorUtil {
      *
      * @param param param
      */
-    public static ServerResponse checkParam(Object param) {
+    public static Response checkParam(Object param) {
         Map<String, String> map = validateObject(param);
         if (MapUtils.isNotEmpty(map)) {
-            return ServerResponse.createByErrorMsg(map.toString());
+            log.error("[参数检查] 未通过检查的字段 : {}", map.toString());
+            return Response.errorAndMsg(map.toString());
         }
 
-        return ServerResponse.createByCodeSuccess();
+        return Response.success();
     }
 
     /**
@@ -113,14 +117,31 @@ public class BeanValidatorUtil {
      *
      * @param validateResult validateResult
      * @param <T>            泛型
-     * @return error map key是有问题的字段，value是错误信息
+     * @return error map
      */
     private static <T> Map<String, String> errorResult(Set<ConstraintViolation<T>> validateResult) {
         Map<String, String> errors = Maps.newLinkedHashMap();
         for (ConstraintViolation<T> tConstraintViolation : validateResult) {
+            // key是有问题的字段，value是错误信息
             errors.put(tConstraintViolation.getPropertyPath().toString(), tConstraintViolation.getMessage());
         }
 
+        log.error("[参数检查] 未通过检查的字段 : {}", errors.toString());
         return errors;
+    }
+
+    /**
+     * 将map转换成对用户友好的消息
+     *
+     * @param map map
+     * @return message
+     */
+    private static String mapToMsg(Map<String, String> map) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            sb.append(entry.getValue()).append(";");
+        }
+
+        return sb.deleteCharAt(sb.length() - 1).toString();
     }
 }
