@@ -185,7 +185,7 @@ public class RSAUtil {
      * @param privateKeyStr 私钥字符串
      * @return 解密后的明文字符串
      */
-    public static String privateDecrypt(String cipherText, String privateKeyStr) throws InvalidKeySpecException,
+    public static String splitDecryptByPrivateKey(String cipherText, String privateKeyStr) throws InvalidKeySpecException,
             NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, InvalidKeyException {
         PrivateKey privateKey = getPrivateKey(privateKeyStr);
         checkPrivateKey(privateKey);
@@ -201,7 +201,7 @@ public class RSAUtil {
      * @param publicKeyStr 公钥字符串
      * @return 解密后的明文字符串
      */
-    public static String publicDecrypt(String cipherText, String publicKeyStr) throws InvalidKeySpecException,
+    public static String splitDecryptByPublicKey(String cipherText, String publicKeyStr) throws InvalidKeySpecException,
             NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, InvalidKeyException {
         PublicKey publicKey = getPublicKey(publicKeyStr);
         checkPublicKey(publicKey);
