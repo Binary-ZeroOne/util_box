@@ -222,9 +222,9 @@ public class RSAUtil {
             NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
         Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, key);
-        byte[] result = rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, cipherText.getBytes(CHARSET), modulus.bitLength());
+        byte[] result = rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.getDecoder().decode(cipherText), modulus.bitLength());
 
-        return Base64.getEncoder().encodeToString(result);
+        return new String(result, CHARSET);
     }
 
     /**
@@ -302,11 +302,12 @@ public class RSAUtil {
             int offSet = 0;
             byte[] buff;
 
-            for (int i = 0; data.length > offSet; i++) {
+            for (int i = 0; data.length > offSet; ) {
                 buff = data.length - offSet > maxBlock ? cipher.doFinal(data, offSet, maxBlock) :
                         cipher.doFinal(data, offSet, data.length - offSet);
 
                 out.write(buff, 0, buff.length);
+                i++;
                 offSet = i * maxBlock;
             }
 
