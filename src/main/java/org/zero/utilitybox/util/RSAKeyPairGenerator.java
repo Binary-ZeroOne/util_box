@@ -1,4 +1,4 @@
-package com.example.demo.util;
+package org.zero.utilitybox.util;
 
 import java.io.*;
 import java.security.KeyPair;
