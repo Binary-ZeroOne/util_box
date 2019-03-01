@@ -18,6 +18,12 @@ public class DateTimeUtil {
 
     private static final String STANDARO_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+
+    private static final int FIFTY_NINE = 59;
+
+    private static final int TWENTY_THREE = 23;
+    
     /**
      * 字符串转Date类型
      *
