@@ -25,6 +25,55 @@ public class DateTimeUtil {
     private static final int TWENTY_THREE = 23;
     
     /**
+     * 判断是否是标准的时间格式
+     *
+     * @param dateTimeStr dateTimeStr
+     * @return boolean
+     */
+    public static boolean isStandardDate(String dateTimeStr) {
+        return isParser(dateTimeStr, STANDARO_FORMAT);
+    }
+
+    /**
+     * 判断是否是指定的时间格式
+     *
+     * @param dateTimeStr dateTimeStr
+     * @return boolean
+     */
+    public static boolean isParser(String dateTimeStr, String formatStr) {
+        try {
+            strToDateTime(dateTimeStr, formatStr);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 字符串转DateTime类型
+     *
+     * @param dateTimeStr 时间（字符串）
+     * @param formatStr   需要转换的格式
+     * @return DateTime
+     */
+    public static DateTime strToDateTime(String dateTimeStr, String formatStr) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(formatStr);
+
+        return dateTimeFormatter.parseDateTime(dateTimeStr);
+    }
+
+    /**
+     * 字符串转DateTime类型，使用默认时间格式
+     *
+     * @param dateTimeStr 时间（字符串）
+     * @return DateTime
+     */
+    public static DateTime strToDateTime(String dateTimeStr) {
+        return strToDateTime(dateTimeStr, STANDARO_FORMAT);
+    }
+    
+    /**
      * 字符串转Date类型
      *
      * @param dateTimeStr 时间（字符串）
